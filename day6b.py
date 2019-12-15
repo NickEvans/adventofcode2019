@@ -1,44 +1,25 @@
 import sys
 
-file = open(sys.argv[1])
-buffer = file.read()
-orbitList = buffer.split('\n')
-for i in range(len(orbitList)):
-    orbitList[i] = orbitList[i].split(')')
-
-planetMap = {}
-
 class Planet:
     def __init__(self, name):
         self.parent = None
         self.children = []
         self.name = name
 
-def orbitDepth(node, top):
+def depthToNode(node, top):
     if node.parent is None:
         return 0
     if node.parent is top:
         return 0
-    return 1 + orbitDepth(node.parent, top)
+    return 1 + depthToNode(node.parent, top)
 
-def totalOrbits(plst):
+def sumDepths(plst):
     total = 0
     for p in plst:
-        total += orbitDepth(plst[p], planetMap["COM"])
+        total += depthToNode(plst[p], planetMap["COM"])
     return total
 
-#Read all planets
-for planets in orbitList:
-    for i in range(2):
-        if planets[i] not in planetMap:
-            planetMap[planets[i]] = Planet(planets[i])
-
-#Connect all planets:
-for p in orbitList:
-    planetMap[p[0]].children.append(planetMap[p[1]])
-    planetMap[p[1]].parent = planetMap[p[0]]
-
-def commonPath():
+def findCommonParent():
     plst1 = []
     plst2 = []
 
@@ -54,6 +35,29 @@ def commonPath():
 
     for elem in plst1:
         if elem in plst2:
-            return elem
+            return elem #The first common planet provides a path
+    
+    print("Error: no path found")
 
-print(orbitDepth(planetMap["YOU"], planetMap[commonPath()]) + orbitDepth(planetMap["SAN"], planetMap[commonPath()]))
+#Open and parse file
+file = open(sys.argv[1])
+buffer = file.read()
+orbitList = buffer.split('\n')
+for i in range(len(orbitList)):
+    orbitList[i] = orbitList[i].split(')')
+
+planetMap = {} #Name hashes to planet object
+
+#Read all planets
+for planets in orbitList:
+    for i in range(2):
+        if planets[i] not in planetMap:
+            planetMap[planets[i]] = Planet(planets[i])
+
+#Connect all planets:
+for p in orbitList:
+    planetMap[p[0]].children.append(planetMap[p[1]])
+    planetMap[p[1]].parent = planetMap[p[0]]
+
+#The first common parent planet between you and santa provides a bridge with the shortest path (because each planet only orbits one other planet)
+print(depthToNode(planetMap["YOU"], planetMap[findCommonParent()]) + depthToNode(planetMap["SAN"], planetMap[findCommonParent()]))
