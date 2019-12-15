@@ -8,7 +8,7 @@ end = len(mem)
 pointer = 0
 
 while(pointer < end):
-    #Fetch instruction
+    #Fetch
     opcode = mem[pointer] % 100
 
     if opcode == 99: #HALT
@@ -17,7 +17,7 @@ while(pointer < end):
     #Get modes
     m = mem[pointer] / 100
     modes = []
-    for i in range(3):
+    for _ in range(3):
         modes.append(m % 10)
         m = m / 10
 
@@ -27,6 +27,7 @@ while(pointer < end):
             if modes[i] == 0: #position mode
                 args[i] = mem[args[i]]
 
+    #Execute
     if opcode == 1: #Add
         mem[args[2]] = args[0] + args[1]
         pointer += 4
@@ -70,5 +71,5 @@ while(pointer < end):
         pointer += 4
 
     else:
-        print(opcode)
-        sys.exit("Invalid opcode")
+        print "Invalid opcode: ", opcode
+        sys.exit("Exit failure")
