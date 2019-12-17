@@ -14,16 +14,24 @@ while(pointer < end):
     if opcode == 99: #HALT
         break
 
-    #Get modes
+    #Read modes
     m = mem[pointer] / 100
     modes = []
     for _ in range(3):
         modes.append(m % 10)
         m = m / 10
 
-    #Set args
+    #Read args
     args = mem[(pointer + 1):(pointer + 4)]
-    for i in range(2):
+
+    #Input and output use fewer arguments
+    if opcode == 3 or opcode == 4:
+        argno = 1
+    else:
+        argno = 2
+
+    #Change args to position/immediate modes
+    for i in range(argno):
             if modes[i] == 0: #position mode
                 args[i] = mem[args[i]]
 
